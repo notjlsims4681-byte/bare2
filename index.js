@@ -1,22 +1,21 @@
-import { createBareServer } from '@tomphttp/bare-server-node';
+import createRammerhead from 'rammerhead';
 import http from 'node:http';
 
-// Initialize the Bare engine
-const bare = createBareServer('/');
+const rammerhead = createRammerhead();
 const server = http.createServer();
 
 server.on('request', (req, res) => {
-    if (bare.shouldRoute(req)) {
-        bare.routeRequest(req, res);
+    if (rammerhead.shouldRoute(req)) {
+        rammerhead.routeRequest(req, res);
     } else {
-        res.writeHead(400);
-        res.end('Not found.');
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.end('Rammerhead Proxy Backend Online');
     }
-});
+}       );
 
 server.on('upgrade', (req, socket, head) => {
-    if (bare.shouldRoute(req)) {
-        bare.routeUpgrade(req, socket, head);
+    if (rammerhead.shouldRoute(req)) {
+        rammerhead.routeUpgrade(req, socket, head);
     } else {
         socket.end();
     }
@@ -24,5 +23,5 @@ server.on('upgrade', (req, socket, head) => {
 
 const port = process.env.PORT || 10000;
 server.listen({ port }, () => {
-    console.log(`Modern Bare Server Online on port ${port}`);
+    console.log(`Rammerhead engine listening on port ${port}`);
 });
